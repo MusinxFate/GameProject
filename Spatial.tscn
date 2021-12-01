@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Player.gd" type="Script" id=1]
+[ext_resource path="res://CameraOrbit.gd" type="Script" id=2]
 
 [sub_resource type="CubeMesh" id=4]
 
@@ -42,5 +43,9 @@ material/0 = null
 transform = Transform( 0.489, 0, 0, 0, -2.18557e-08, -0.568, 0, 0.5, -2.48281e-08, 0, 0.368843, 0 )
 shape = SubResource( 3 )
 
-[node name="Camera" type="Camera" parent="Player"]
+[node name="CameraOrbit" type="Spatial" parent="Player"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
+script = ExtResource( 2 )
+
+[node name="Camera" type="Camera" parent="Player/CameraOrbit"]
 transform = Transform( 1, 0, 0, 0, 0.810175, 0.586189, 0, -0.586189, 0.810175, 0, 3.13235, 2.56503 )
