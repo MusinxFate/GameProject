@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Player.gd" type="Script" id=1]
 [ext_resource path="res://CameraOrbit.gd" type="Script" id=2]
+[ext_resource path="res://Realistic_White_Male_Low_Poly.obj" type="ArrayMesh" id=4]
 
 [sub_resource type="CubeMesh" id=4]
 
@@ -12,9 +13,9 @@ albedo_color = Color( 0.427451, 0.552941, 0.0745098, 1 )
 
 [sub_resource type="BoxShape" id=6]
 
-[sub_resource type="CapsuleMesh" id=8]
+[sub_resource type="Skin" id=9]
 
-[sub_resource type="CapsuleShape" id=3]
+[sub_resource type="CapsuleShape" id=10]
 
 [node name="Spatial" type="Spatial"]
 
@@ -28,24 +29,26 @@ material/0 = SubResource( 7 )
 physics_material_override = SubResource( 5 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Ground/StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.3477, 0 )
 shape = SubResource( 6 )
 
 [node name="Player" type="KinematicBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.547564, 0 )
+transform = Transform( 0.5, 0, 0, 0, -2.18557e-08, 0.5, 0, -0.5, -2.18557e-08, 0, 1.27509, 0 )
 script = ExtResource( 1 )
 
-[node name="MeshInstance" type="MeshInstance" parent="Player"]
-transform = Transform( 1, 0, 0, 0, 0, 0.548, 0, 1, 0, 0, 0.544062, 0 )
-mesh = SubResource( 8 )
+[node name="PlayerMeshInstance" type="MeshInstance" parent="Player"]
+transform = Transform( 0.072, -1.14757e-08, 5.5442e-16, 0, 3.32207e-09, 0.084, 1.08717e-08, 0.076, -3.67176e-09, 0, 0.544062, -0.288024 )
+mesh = ExtResource( 4 )
+skin = SubResource( 9 )
 material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Player"]
-transform = Transform( 0.489, 0, 0, 0, -2.18557e-08, -0.568, 0, 0.5, -2.48281e-08, 0, 0.368843, 0 )
-shape = SubResource( 3 )
+transform = Transform( -1.387, 4.3366e-07, -3.57733e-15, 0, -1.25539e-07, -0.542, -2.09431e-07, -2.872, 2.36916e-08, 0, 0.544062, 2.58311 )
+shape = SubResource( 10 )
 
 [node name="CameraOrbit" type="Spatial" parent="Player"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 script = ExtResource( 2 )
 
 [node name="Camera" type="Camera" parent="Player/CameraOrbit"]
-transform = Transform( 1, 0, 0, 0, 0.810175, 0.586189, 0, -0.586189, 0.810175, 0, 3.13235, 2.56503 )
+transform = Transform( 2, 0, 0, 0, 0.981504, -1.7426, 0, 1.7426, 0.981504, 0, -4.99999, 8.68878 )
