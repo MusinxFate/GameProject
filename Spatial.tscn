@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Player.gd" type="Script" id=1]
 [ext_resource path="res://CameraOrbit.gd" type="Script" id=2]
+[ext_resource path="res://Camera.gd" type="Script" id=3]
 [ext_resource path="res://Realistic_White_Male_Low_Poly.obj" type="ArrayMesh" id=4]
 
 [sub_resource type="CubeMesh" id=4]
@@ -52,4 +53,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 script = ExtResource( 2 )
 
 [node name="Camera" type="Camera" parent="Player/CameraOrbit"]
-transform = Transform( 2, 0, 0, 0, 0.981503, -1.7426, 0, 1.7426, 0.981503, 0, -7.33075, 8.68878 )
+transform = Transform( 2, 0, 0, 0, 0.584743, -1.91261, 0, 1.91261, 0.584743, 0, -7.33075, 8.68878 )
+fov = 75.0
+script = ExtResource( 3 )
