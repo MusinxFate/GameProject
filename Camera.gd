@@ -8,5 +8,5 @@ func _ready():
 
 func _input(event):     
 	if event is InputEventMouseMotion:
-		if (rotation_degrees.x < 73):
-			rotation_degrees.x = 73
+		if (rotation_degrees.x < -73):
+			rotation_degrees.x = -73

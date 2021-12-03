@@ -9,6 +9,10 @@ onready var camera = get_node("Camera")
 
 func _input(event):  
 	if event is InputEventMouseMotion: mouseDelta = event.relative
+	if (event is InputEventMouseMotion) :
+		print(camera.rotation_degrees.x)
+		if (camera.rotation_degrees.x < 73):
+			camera.rotation_degrees.x = 73
 
 func _process(delta):  
 	var rot = Vector3(mouseDelta.y, mouseDelta.x, 0) * lookSensitivity * delta	
