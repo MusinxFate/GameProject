@@ -1,52 +1,85 @@
 extends KinematicBody
-var isRunning : bool = false
-var curHp : int = 10
-var maxHp : int = 10
-var damage : int = 1
-var gold : int = 0
-var attackRate : float = 0.3
-var lastAttackTime : int = 0
-var moveSpeed : float = 5.0
-var jumpForce : float = 10.0
-var gravity : float = 15.0
-var vel : Vector3 = Vector3()
-onready var camera = get_node("CameraOrbit")
 
-# called every physics step (60 times a second)
-func _physics_process(delta):  
-  vel.x = 0
-  vel.z = 0
-  
-  var input = Vector3()
-  
-  # movement inputs
-  if Input.is_action_pressed("up"): input.z -= 1
-  if Input.is_action_pressed("down"): input.z += 1
-  if Input.is_action_pressed("left"): input.x -= 1
-  if Input.is_action_pressed("right"): input.x += 1
+export var speed = 5
+export var fall_acceleration = 50
+export var jump_impulse = 20
 
-  if Input.is_action_just_pressed("boost"): isRunning = true
-  if Input.is_action_just_released("boost"): isRunning = false
-  
-  # normalize the input vector to prevent increased diagonal speed
-  input = input.normalized()
-  
-  # get the relative direction
-  var dir = (transform.basis.z * input.z + transform.basis.x * input.x)
-  
-  # apply the direction to our velocity
-  if !isRunning:
-   vel.x = dir.x * moveSpeed
-   vel.z = dir.z * moveSpeed
+# cam look
+var minLookAngle : float = -90.0
+var maxLookAngle : float = 90.0
+var lookSensitivity : float = 10.0
 
-  if isRunning:
-   vel.x = dir.x * moveSpeed * 5
-   vel.z = dir.z * moveSpeed * 5
-  
-  # gravity
-  vel.y -= gravity * delta
-  
-  if Input.is_action_pressed("jump") and is_on_floor(): vel.y = jumpForce
+# vectors
+# var vel : Vector3 = Vector3()
+var mouseDelta : Vector2 = Vector2()
+
+# components
+onready var camera : Camera = get_node("CameraOrbit/Camera")
+# onready var muzzle : Spatial = get_node("Camera/Muzzle")
+
+
+# Emitted when a mob hit the player.
+
+
+var velocity = Vector3.ZERO
+
+
+func _physics_process(delta):
+	var direction = Vector3.ZERO
+	var camera_x = camera.global_transform.basis.x
+	var camera_z = camera.global_transform.basis.z
+
+	if Input.is_action_pressed("movright"):
+		direction += camera_x
+	if Input.is_action_pressed("movleft"):
+		direction -= camera_x
+	if Input.is_action_pressed("movdown"):
+		direction += camera_z
+	if Input.is_action_pressed("movup"):
+		direction -= camera_z
+		
+	#sprinting
+	if Input.is_action_pressed("boost"):
+		speed = 15
+	if Input.is_action_just_released("boost"):
+		speed = 5
+
+
+
+	velocity.x = direction.x * speed
+	velocity.z = direction.z * speed
+
+	# Jumping.
+	if is_on_floor() and Input.is_action_just_pressed("jump"):
+		velocity.y += jump_impulse
+
+	velocity.y -= fall_acceleration * (delta)
+	velocity = move_and_slide(velocity, Vector3.UP)
+
+
+
+func _ready():
+
+	# hide and lock the mouse cursor
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) 
+
+
 	
-  # move along the current velocity
-  vel = move_and_slide(vel, Vector3.UP)
+func _process(delta):
+
+	# rotate the camera along the x axis
+	camera.rotation_degrees.x -= mouseDelta.y * lookSensitivity * delta
+
+	# clamp camera x rotation axis
+	camera.rotation_degrees.x = clamp(camera.rotation_degrees.x, minLookAngle, maxLookAngle)
+
+	# rotate the player along their y-axis
+	rotation_degrees.y -= mouseDelta.x * lookSensitivity * delta
+
+	# reset the mouseDelta vector
+	mouseDelta = Vector2()
+
+func _input(event):
+
+	if event is InputEventMouseMotion:
+		mouseDelta = event.relative

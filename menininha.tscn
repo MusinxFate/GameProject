@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Sprites/Menininha/uploads_files_2087101_Kairi.dae" type="PackedScene" id=1]
+
+[node name="uploads_files_2087101_Kairi" instance=ExtResource( 1 )]
