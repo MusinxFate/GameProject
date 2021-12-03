@@ -1,6 +1,6 @@
 extends KinematicBody
 
-export var speed = 5
+export var speed = 15
 export var fall_acceleration = 50
 export var jump_impulse = 20
 
@@ -17,12 +17,7 @@ var mouseDelta : Vector2 = Vector2()
 onready var camera : Camera = get_node("CameraOrbit/Camera")
 # onready var muzzle : Spatial = get_node("Camera/Muzzle")
 
-
-# Emitted when a mob hit the player.
-
-
 var velocity = Vector3.ZERO
-
 
 func _physics_process(delta):
 	var direction = Vector3.ZERO
@@ -37,7 +32,10 @@ func _physics_process(delta):
 		direction += camera_z
 	if Input.is_action_pressed("movup"):
 		direction -= camera_z
-		
+		get_node("AnimationPlayer").play("Walking")
+	elif Input.is_action_just_released("movup"):
+		get_node("AnimationPlayer").stop()
+		get_node("AnimationPlayer").play("Idle")
 	#sprinting
 	if Input.is_action_pressed("boost"):
 		speed = 15
@@ -56,17 +54,14 @@ func _physics_process(delta):
 	velocity.y -= fall_acceleration * (delta)
 	velocity = move_and_slide(velocity, Vector3.UP)
 
-
-
 func _ready():
-
 	# hide and lock the mouse cursor
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) 
+	var anim = get_node("AnimationPlayer").get_animation("Idle")
+	anim.loop = true
+	get_node("AnimationPlayer").play("Idle")
 
-
-	
 func _process(delta):
-
 	# rotate the camera along the x axis
 	camera.rotation_degrees.x -= mouseDelta.y * lookSensitivity * delta
 
@@ -80,6 +75,5 @@ func _process(delta):
 	mouseDelta = Vector2()
 
 func _input(event):
-
 	if event is InputEventMouseMotion:
 		mouseDelta = event.relative
