@@ -5,6 +5,7 @@ export var fall_acceleration = 50
 export var jump_impulse = 20
 
 # cam look
+var isRunning : bool = false
 var minLookAngle : float = -90.0
 var maxLookAngle : float = 90.0
 var lookSensitivity : float = 10.0
@@ -26,22 +27,41 @@ func _physics_process(delta):
 
 	if Input.is_action_pressed("movright"):
 		direction += camera_x
+		get_node("AnimationPlayer").play("RightWalk")
+	elif Input.is_action_just_released("movright"):
+		stopAnimation()
+
 	if Input.is_action_pressed("movleft"):
 		direction -= camera_x
+		get_node("AnimationPlayer").play("LeftWalk")
+	elif Input.is_action_just_released("movleft"):
+		stopAnimation()
+
 	if Input.is_action_pressed("movdown"):
 		direction += camera_z
-	if Input.is_action_pressed("movup"):
+		get_node("AnimationPlayer").play("BackWalk")
+	elif Input.is_action_just_released("movdown"):
+		stopAnimation()
+
+	if (Input.is_action_pressed("movup") && !isRunning):
 		direction -= camera_z
 		get_node("AnimationPlayer").play("Walking")
 	elif Input.is_action_just_released("movup"):
-		get_node("AnimationPlayer").stop()
-		get_node("AnimationPlayer").play("Idle")
-	#sprinting
-	if Input.is_action_pressed("boost"):
-		speed = 15
-	if Input.is_action_just_released("boost"):
-		speed = 5
+		stopAnimation()
+		
+	if (isRunning && Input.is_action_pressed("movup")):
+		direction -= camera_z
 
+	#sprinting
+	if ((Input.is_action_pressed("boost") && Input.is_action_pressed("movup")) && (isRunning == false)):
+		speed = 15
+		isRunning = true
+		get_node("AnimationPlayer").get_animation("Running").loop = true
+		get_node("AnimationPlayer").play("Running")
+	elif ((!Input.is_action_pressed("boost") || !Input.is_action_pressed("movup")) && isRunning == true):
+		speed = 5
+		isRunning = false
+		stopAnimation()
 
 
 	velocity.x = direction.x * speed
@@ -49,10 +69,16 @@ func _physics_process(delta):
 
 	# Jumping.
 	if is_on_floor() and Input.is_action_just_pressed("jump"):
-		velocity.y += jump_impulse
+		get_node("AnimationPlayer").play("Jumping")
 
 	velocity.y -= fall_acceleration * (delta)
 	velocity = move_and_slide(velocity, Vector3.UP)
+
+func stopAnimation():
+	print(get_node("AnimationPlayer").get_assigned_animation())
+	if (get_node("AnimationPlayer").get_assigned_animation() != "Idle"):
+		get_node("AnimationPlayer").stop()
+		get_node("AnimationPlayer").play("Idle")
 
 func _ready():
 	# hide and lock the mouse cursor
@@ -77,3 +103,15 @@ func _process(delta):
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouseDelta = event.relative
+
+
+func _on_AnimationPlayer_animation_finished(anim_name):
+	if (anim_name == "Jumping"):
+		get_node("AnimationPlayer").play("Landing")
+	elif (anim_name == "Landing"):
+		get_node("AnimationPlayer").play("Idle")
+
+func _on_AnimationPlayer_animation_started(anim_name):
+	if (anim_name == "Jumping"):
+		velocity.y += jump_impulse
+		velocity = move_and_slide(velocity, Vector3.UP)
